@@ -54,20 +54,24 @@ def is_ai_related(sentence):
 
     return response.choices[0].message.content.strip()
 
+# Function to process a batch of sentences
+def process_batch(batch):
+    batch['AI Related'] = batch['sentence'].apply(is_ai_related)
+    return batch
+
 # Function to process the input CSV and add an AI-related column for all rows
-def process_csv(input_csv, output_csv):
-    df = pd.read_csv(input_csv)
-    total_rows = len(df)
-    
-    if not df.empty:
-        for index, row in tqdm(df.iterrows(), total=total_rows, desc="Processing rows"):
-            df.at[index, 'AI Related'] = is_ai_related(row['sentence'])
-            # Log the progress every 10 rows
-            if (index + 1) % 10 == 0 or index == total_rows - 1:
-                logging.info(f"Processed {index + 1}/{total_rows} rows ({(index + 1) / total_rows * 100:.2f}% complete)")
-        df.to_csv(output_csv, index=False)
-    else:
-        logging.error("The input CSV is empty.")
+def process_csv(input_csv, output_csv, batch_size=BATCH_SIZE):
+    chunks = []
+    for chunk in tqdm(pd.read_csv(input_csv, chunksize=batch_size), desc="Processing batches"):
+        processed_chunk = process_batch(chunk)
+        chunks.append(processed_chunk)
+        # Log the progress
+        logging.info(f"Processed batch of {batch_size} rows")
+
+    # Concatenate all processed chunks and save to output CSV
+    processed_df = pd.concat(chunks)
+    processed_df.to_csv(output_csv, index=False)
+    logging.info(f"Processed CSV saved to {output_csv}")
 
 if __name__ == "__main__":
     # Paths for the input and output CSV files in the same directory as the script
