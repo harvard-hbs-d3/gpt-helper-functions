@@ -27,7 +27,7 @@ This repository provides a Python script that utilizes OpenAI's GPT model for ba
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/gpt-helper-functions.git
+    git clone https://github.com/harvard-hbs-d3/gpt-helper-functions.git
     cd gpt-helper-functions
     ```
 
