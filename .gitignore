@@ -1,0 +1,12 @@
+# Python
+*.pyc
+__pycache__/
+
+# Environment variables
+# .env
+
+# Logs
+# *.log
+
+# Data files
+# data/*.csv
